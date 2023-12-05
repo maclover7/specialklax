@@ -28,7 +28,7 @@ jobs:
           git add .
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git commit -m "Latest data"
+          git commit -m "Latest data" || echo "No updates to data"
       - id: push
         name: Push
         run: |
