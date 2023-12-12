@@ -2,7 +2,7 @@ name: "Download tracked files"
 
 on:
   schedule:
-    - cron: "0 17 * * *" # Every day at 17:00 UTC (12:00 EST)
+    - cron: "0 */2 * * *" # Every two hours
   workflow_dispatch:
 
 jobs:
