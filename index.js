@@ -28,6 +28,6 @@ const getOCWAMeetings = () => {
 };
 
 [
-  getCampaignFilersToday,
+  //getCampaignFilersToday,
   getOCWAMeetings
 ].forEach(fn => fn());
