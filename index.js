@@ -7,7 +7,7 @@ const getOCWAMeetings = () => {
   })
   .then(r => r.json())
   .then(r => r.map(meeting => `${meeting.numberdate} ${meeting.name}`))
-  .then(m => writeFile('ocwa-meetings.json', JSON.stringify(m)));
+  .then(m => writeFile('ocwa-meetings.html', `<body>${m.join("\n")}</body>`));
 };
 
 [
