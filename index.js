@@ -1,4 +1,5 @@
 const { writeFile } = require('fs/promises');
+const cheerio = require('cheerio');
 
 const getCampaignFilersToday = () => {
   fetch("https://publicreporting.elections.ny.gov/ActiveDeactiveFiler/ActiveDeactiveFiler?lstDateType=Today&lstUCOfficeType=&lstStatus=All&lstFilerType=&ddlCommitteeType=&txtDateFrom=&txtDateTo=&Command=CSV&listOfFilerGrid_length=10", {
@@ -27,7 +28,45 @@ const getOCWAMeetings = () => {
   .then(m => writeFile('ocwa-meetings.html', `<body>${m.join("\n")}</body>`));
 };
 
+const getOCSSCAppearances = () => {
+  const justiceIds = [
+    'U6a2jpnVoDhKwKshKSJodA==', // Antonacci
+    '54p3E0aAR5yUTR2DF04l6w==', // Fogel
+    'Pjje_PLUS_SvP9MR72jp7clt6tg==', // Kuehner
+    'ceb4ZFI6r4j6KBHo6lq2GA==', // Lamendola
+    '8GuZG2mzpD1uh4iWfuFf3w==', // McMahon
+    'QcTMuZwDgYYoZUdJeafHBQ==', // Neri
+    'yz6lym9RMdSn7xohHv_PLUS_3Og==' // Westlake
+  ];
+
+  const baseUrl = 'https://iapps.courts.state.ny.us/webcivil/FCASCalendarDetail?hInclude=NO&hSort=index_no&hiddenOutputFormat=HTML&search=Judge';
+  const courtId = 'JgLFm8QprqfximG8E2BCwA==';
+  const today = (new Date()).toLocaleDateString();
+  console.log((new Date()).toLocaleString())
+
+  return Promise.all(justiceIds.map((justiceId) => {
+    let extraParams = `court=${courtId}&justice=${justiceId}&hiddenDateFrom=${today}&hiddenDateTo=${today}`;
+
+    return fetch(`${baseUrl}&${extraParams}`)
+      .then(r => r.text())
+      .then(r => new Promise((resolve) => resolve(cheerio.load(r))))
+      .then(r => {
+        if (r('dl').length === 0) return Promise.resolve([]);
+
+        return Promise.resolve(Array.from(r('dl')).map((app) => [
+          // Case number and caption
+          r(app.childNodes.find(c => c.name === 'dt')).text().trim().replace('-\n', '- '),
+
+          // Case details
+          ...app.childNodes.filter(c => c.name === 'dd').map(c => r(c).text().trim().replace(':\n', ': ').replace('\n/', ','))
+        ]));
+      });
+  }))
+    .then((apps) => writeFile('ocssc-today.html', `<body>${apps.flat().map(app => app.join("\n")).join("\n\n")}</body>`));
+};
+
 [
   //getCampaignFilersToday,
-  getOCWAMeetings
+  getOCWAMeetings,
+  getOCSSCAppearances,
 ].forEach(fn => fn());
