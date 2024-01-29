@@ -21,6 +21,8 @@ jobs:
       - run: npm install
       - id: run-script
         name: Run download script
+        env:
+          LEGISLATION_API_KEY: ${{ secrets.LEGISLATION_API_KEY }}
         run: |
           node index.js
       - id: add-and-commit

@@ -1,6 +1,32 @@
 const { writeFile } = require('fs/promises');
 const cheerio = require('cheerio');
 
+// ** Helper functions ** //
+const getLegislationWithStatusOffset = (status, offset) => {
+  const params = new URLSearchParams({
+    'term': `status.statusType:${status}`,
+    'limit': 1000,
+    'offset': offset,
+    'sort': 'status.actionDate:DESC',
+    'type': 'published',
+    'key': process.env.LEGISLATION_API_KEY
+  });
+
+  return fetch(`https://legislation.nysenate.gov/api/3/bills/2023/search?${params}`)
+    .then(r => r.json())
+    .then(r => r.result.items.map(i => i.result));
+};
+
+const getLegislationWithStatus = (status) => {
+  return Promise.all(
+    [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000].map((offset) =>
+    getLegislationWithStatusOffset(status, offset)))
+    .then((...bills) => Promise.resolve(bills.flat().flat()))
+    .then(bills => bills.filter(b => !b.billType.resolution));
+};
+
+// ** //
+
 const getCampaignFilersToday = () => {
   fetch("https://publicreporting.elections.ny.gov/ActiveDeactiveFiler/ActiveDeactiveFiler?lstDateType=Today&lstUCOfficeType=&lstStatus=All&lstFilerType=&ddlCommitteeType=&txtDateFrom=&txtDateTo=&Command=CSV&listOfFilerGrid_length=10", {
     "headers": {
@@ -16,6 +42,32 @@ const getCampaignFilersToday = () => {
       '<td>' + filerData + '</td>').join('') +
     '</tr>').join('')}</tbody></table></body>`)
   .then(f => writeFile('campaign-filers-today.html', f));
+};
+
+const getLegislationGov = () => {
+  getLegislationWithStatus('DELIVERED_TO_GOV')
+    .then(bills => bills.map(b => [
+      b.status.statusDesc,
+      b.actions.items.slice(-1)[0].date,
+      b.sponsor.member.shortName,
+      b.basePrintNo,
+      b.title
+    ]))
+    .then((bills) => writeFile('leg-gov.html', `<body><h4>D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
+};
+
+const getLegislationPassed = () => {
+  Promise.all([getLegislationWithStatus('PASSED_ASSEMBLY'), getLegislationWithStatus('PASSED_SENATE')])
+    .then((bills) => Promise.resolve(bills.flat()))
+    .then(bills => bills.filter(b => ['RETURNED TO ASSEMBLY', 'RETURNED TO SENATE'].includes(b.actions.items.slice(-1)[0].text)))
+    .then(bills => bills.map(b => [
+      b.status.statusDesc,
+      b.actions.items.slice(-1)[0].date,
+      b.sponsor.member.shortName,
+      b.basePrintNo,
+      b.title
+    ]))
+    .then((bills) => writeFile('leg-passed.html', `<body><h4>Awaiting D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
 const getOCWAMeetings = () => {
@@ -67,6 +119,8 @@ const getOCSSCAppearances = () => {
 
 [
   //getCampaignFilersToday,
+  getLegislationGov,
+  getLegislationPassed,
   getOCWAMeetings,
   getOCSSCAppearances,
 ].forEach(fn => fn());
