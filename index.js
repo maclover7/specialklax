@@ -123,7 +123,9 @@ const getUnfitCityStructures = () => {
     'orderByFields': 'violation_date',
     'outFields': '*',
     'where': `(
-      violation IN ('2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy')
+      violation IN (
+        '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
+        '2020 PMCNYS - Section 107.1.4 - Unlawful Structures')
       AND status_type_name IN ('Open'))`
   });
 
@@ -132,6 +134,7 @@ const getUnfitCityStructures = () => {
     )
   .then(r => r.json())
   .then(r => r.features.map(p => [
+    p.attributes.violation.includes('107.1.4') ? 'Unlawful' : 'Unfit',
     p.attributes.complaint_address,
     p.attributes.SBL,
     new Date(p.attributes.violation_date).toLocaleDateString(),
