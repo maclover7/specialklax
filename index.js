@@ -117,10 +117,35 @@ const getOCSSCAppearances = () => {
     .then((apps) => writeFile('ocssc-today.html', `<body>${apps.flat().map(app => app.join("\n")).join("\n\n")}</body>`));
 };
 
+const getUnfitCityStructures = () => {
+  const params = new URLSearchParams({
+    'f': 'json',
+    'orderByFields': 'violation_date',
+    'outFields': '*',
+    'where': `(
+      violation IN ('2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy')
+      AND status_type_name IN ('Open'))`
+  });
+
+  return fetch(
+    `https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/Code_Violations_v2/FeatureServer/0/query?${params.toString()}`
+    )
+  .then(r => r.json())
+  .then(r => r.features.map(p => [
+    p.attributes.complaint_address,
+    p.attributes.SBL,
+    new Date(p.attributes.violation_date).toLocaleDateString(),
+    p.attributes.owner_name
+  ]))
+  .then((properties) => Array.from(new Set(properties.reverse().map(p => p.join(" | ")))))
+  .then((properties) => writeFile('citycodes-unfit.html', `<body>${properties.join("\n")}</body>`));
+};
+
 [
   //getCampaignFilersToday,
   getLegislationGov,
   getLegislationPassed,
   getOCWAMeetings,
-  getOCSSCAppearances,
+  // getOCSSCAppearances,
+  getUnfitCityStructures
 ].forEach(fn => fn());
