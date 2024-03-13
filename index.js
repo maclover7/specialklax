@@ -56,6 +56,34 @@ const getLegislationGov = () => {
     .then((bills) => writeFile('leg-gov.html', `<body><h4>D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
+const getCityPermits = () => {
+  const params = new URLSearchParams({
+    'f': 'json',
+    'orderByFields': 'Issue_Date',
+    'outFields': '*',
+    'where': `(
+      Full_Address IN (
+        '308 Otisco St To Niagara St',
+        '426-502 Madison St To Harrison St',
+        '604 Division St E',
+        '701-05 Genesee St E & Almond St'
+      ))`
+  });
+
+  return fetch(
+    `https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/Permit_Requests/FeatureServer/0/query?${params.toString()}`
+    )
+  .then(r => r.json())
+  .then(r => r.features.map(p => [
+    p.attributes.Permit_Type,
+    p.attributes.Full_Address,
+    new Date(p.attributes.Issue_Date).toLocaleDateString(),
+    p.attributes.Description_of_Work
+  ]))
+  .then((properties) => Array.from(new Set(properties.reverse().map(p => p.join(" | ")))))
+  .then((properties) => writeFile('citycodes-permit.html', `<body>${properties.join("\n")}</body>`));
+};
+
 const getLegislationPassed = () => {
   Promise.all([getLegislationWithStatus('PASSED_ASSEMBLY'), getLegislationWithStatus('PASSED_SENATE')])
     .then((bills) => Promise.resolve(bills.flat()))
@@ -151,6 +179,7 @@ const getUnfitCityStructures = () => {
 
 [
   //getCampaignFilersToday,
+  getCityPermits,
   getLegislationGov,
   getLegislationPassed,
   getOCWAMeetings,
