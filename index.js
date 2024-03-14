@@ -84,6 +84,32 @@ const getCityPermits = () => {
   .then((properties) => writeFile('citycodes-permit.html', `<body>${properties.join("\n")}</body>`));
 };
 
+const getKeyArrests = () => {
+  fetch("https://vinelink-mobile.vineapps.com/api/v1/guest/persons?limit=20&offset=0&showPhotos=false&isPartialSearch=false&siteRefId=NYSWVINE&personFirstName=jeremy&personLastName=degonzaque&stateServed=NY&isSetSort=false&sortByDeleteDateAndLastUpdatedDate=false&includeJuveniles=false&includeSearchBlocked=false&includeRegistrantInfo=true&addImageWatermark=true&personContextTypes=OFFENDER&personContextTypes=DEFENDANT&obscurePersonData=true", {
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "expires": "Sat, 01 Jan 2000 00:00:00 GMT",
+      "pragma": "no-cache",
+      "sec-ch-ua": "\"Chromium\";v=\"122\", \"Not(A:Brand\";v=\"24\", \"Google Chrome\";v=\"122\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-site",
+      "x-vine-application": "VINELINK",
+      "Referer": "https://vinelink.vineapps.com/",
+      "Referrer-Policy": "strict-origin-when-cross-origin"
+    },
+    "body": null,
+    "method": "GET"
+  })
+  .then(r => r.json())
+  .then(r => r._embedded.persons || [])
+  .then(p => writeFile('ocso-keyarrests.html', `<body>${p.map(JSON.stringify).join("\n")}</body>`));
+};
+
 const getLegislationPassed = () => {
   Promise.all([getLegislationWithStatus('PASSED_ASSEMBLY'), getLegislationWithStatus('PASSED_SENATE')])
     .then((bills) => Promise.resolve(bills.flat()))
@@ -180,6 +206,7 @@ const getUnfitCityStructures = () => {
 [
   //getCampaignFilersToday,
   getCityPermits,
+  getKeyArrests,
   getLegislationGov,
   getLegislationPassed,
   getOCWAMeetings,
