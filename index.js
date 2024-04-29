@@ -49,7 +49,7 @@ const getLegislationGov = () => {
     .then(bills => bills.map(b => [
       b.status.statusDesc,
       b.actions.items.slice(-1)[0].date,
-      b.sponsor.member.shortName,
+      b.sponsor.member ? b.sponsor.member.shortName: '',
       b.basePrintNo,
       b.title
     ]))
