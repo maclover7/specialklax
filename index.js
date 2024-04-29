@@ -179,8 +179,10 @@ const getUnfitCityStructures = () => {
     'where': `(
       (violation IN (
         '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
-        '2020 PMCNYS - Section 107.1.4 - Unlawful Structures')
+        '2020 PMCNYS - Section 107.1.4 - Unlawful Structures',
+        '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions')
         OR (complaint_address IN (
+          '100 Madison St & Warren St S',
           '308 Otisco St To Niagara St',
           '604 Division St E',
           '701-05 Genesee St E & Almond St'
