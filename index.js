@@ -44,18 +44,6 @@ const getCampaignFilersToday = () => {
   .then(f => writeFile('campaign-filers-today.html', f));
 };
 
-const getLegislationGov = () => {
-  getLegislationWithStatus('DELIVERED_TO_GOV')
-    .then(bills => bills.map(b => [
-      b.status.statusDesc,
-      b.actions.items.slice(-1)[0].date,
-      b.sponsor.member ? b.sponsor.member.shortName: '',
-      b.basePrintNo,
-      b.title
-    ]))
-    .then((bills) => writeFile('leg-gov.html', `<body><h4>D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
-};
-
 const getCityPermits = () => {
   const params = new URLSearchParams({
     'f': 'json',
@@ -108,6 +96,18 @@ const getKeyArrests = () => {
   .then(r => r.json())
   .then(r => r._embedded.persons || [])
   .then(p => writeFile('ocso-keyarrests.html', `<body>${p.map(JSON.stringify).join("\n")}</body>`));
+};
+
+const getLegislationGov = () => {
+  getLegislationWithStatus('DELIVERED_TO_GOV')
+    .then(bills => bills.map(b => [
+      b.status.statusDesc,
+      b.actions.items.slice(-1)[0].date,
+      b.sponsor.member ? b.sponsor.member.shortName: '',
+      b.basePrintNo,
+      b.title
+    ]))
+    .then((bills) => writeFile('leg-gov.html', `<body><h4>D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
 const getLegislationPassed = () => {
@@ -171,40 +171,6 @@ const getOCSSCAppearances = () => {
     .then((apps) => writeFile('ocssc-today.html', `<body>${apps.flat().map(app => app.join("\n")).join("\n\n")}</body>`));
 };
 
-const getUnfitCityStructures = () => {
-  const params = new URLSearchParams({
-    'f': 'json',
-    'orderByFields': 'violation_date',
-    'outFields': '*',
-    'where': `(
-      (violation IN (
-        '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
-        '2020 PMCNYS - Section 107.1.4 - Unlawful Structures',
-        '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions')
-        OR (complaint_address IN (
-          '100 Madison St & Warren St S',
-          '308 Otisco St To Niagara St',
-          '604 Division St E',
-          '701-05 Genesee St E & Almond St'
-        )))
-      AND status_type_name IN ('Open'))`
-  });
-
-  return fetch(
-    `https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/Code_Violations_v2/FeatureServer/0/query?${params.toString()}`
-    )
-  .then(r => r.json())
-  .then(r => r.features.map(p => [
-    p.attributes.violation.includes('107.1.') ? 'Unlawful/Unfit' : 'Other violation',
-    p.attributes.complaint_address,
-    p.attributes.SBL,
-    new Date(p.attributes.violation_date).toLocaleDateString(),
-    p.attributes.owner_name
-  ]))
-  .then((properties) => Array.from(new Set(properties.reverse().map(p => p.join(" | ")))))
-  .then((properties) => writeFile('citycodes-unfit.html', `<body>${properties.join("\n")}</body>`));
-};
-
 const getSPDClosedComplaints = () => {
   const params = new URLSearchParams({
     f: 'json',
@@ -239,6 +205,40 @@ const getSPDClosedComplaints = () => {
   .then(f => writeFile('spd-complaints-closed.html', f));
 };
 
+const getUnfitCityStructures = () => {
+  const params = new URLSearchParams({
+    'f': 'json',
+    'orderByFields': 'violation_date',
+    'outFields': '*',
+    'where': `(
+      (violation IN (
+        '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
+        '2020 PMCNYS - Section 107.1.4 - Unlawful Structures',
+        '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions')
+        OR (complaint_address IN (
+          '100 Madison St & Warren St S',
+          '308 Otisco St To Niagara St',
+          '604 Division St E',
+          '701-05 Genesee St E & Almond St'
+        )))
+      AND status_type_name IN ('Open'))`
+  });
+
+  return fetch(
+    `https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/Code_Violations_v2/FeatureServer/0/query?${params.toString()}`
+    )
+  .then(r => r.json())
+  .then(r => r.features.map(p => [
+    p.attributes.violation.includes('107.1.') ? 'Unlawful/Unfit' : 'Other violation',
+    p.attributes.complaint_address,
+    p.attributes.SBL,
+    new Date(p.attributes.violation_date).toLocaleDateString(),
+    p.attributes.owner_name
+  ]))
+  .then((properties) => Array.from(new Set(properties.reverse().map(p => p.join(" | ")))))
+  .then((properties) => writeFile('citycodes-unfit.html', `<body>${properties.join("\n")}</body>`));
+};
+
 [
   //getCampaignFilersToday,
   getCityPermits,
@@ -247,6 +247,6 @@ const getSPDClosedComplaints = () => {
   getLegislationPassed,
   getOCWAMeetings,
   // getOCSSCAppearances,
+  getSPDClosedComplaints,
   getUnfitCityStructures,
-  getSPDClosedComplaints
 ].forEach(fn => fn());
