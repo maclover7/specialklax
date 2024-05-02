@@ -2,14 +2,22 @@ const { writeFile } = require('fs/promises');
 const cheerio = require('cheerio');
 
 // ** Helper functions ** //
+const convertLegislation = (bills) => bills.map(b => [
+  b.status.statusDesc,
+  b.actions.items.slice(-1)[0].date,
+  b.sponsor.member ? b.sponsor.member.shortName: '',
+  b.basePrintNo,
+  b.title
+]);
+
 const getLegislationWithStatusOffset = (status, offset) => {
   const params = new URLSearchParams({
-    'term': `status.statusType:${status}`,
-    'limit': 1000,
-    'offset': offset,
-    'sort': 'status.actionDate:DESC',
-    'type': 'published',
-    'key': process.env.LEGISLATION_API_KEY
+    key: process.env.LEGISLATION_API_KEY,
+    limit: 1000,
+    offset: offset,
+    sort: 'status.actionDate:DESC',
+    term: `status.statusType:${status}`,
+    type: 'published'
   });
 
   return fetch(`https://legislation.nysenate.gov/api/3/bills/2023/search?${params}`)
@@ -46,10 +54,10 @@ const getCampaignFilersToday = () => {
 
 const getCityPermits = () => {
   const params = new URLSearchParams({
-    'f': 'json',
-    'orderByFields': 'Issue_Date',
-    'outFields': '*',
-    'where': `(
+    f: 'json',
+    orderByFields: 'Issue_Date',
+    outFields: '*',
+    where: `(
       Full_Address IN (
         '308 Otisco St To Niagara St',
         '426-502 Madison St To Harrison St',
@@ -100,13 +108,7 @@ const getKeyArrests = () => {
 
 const getLegislationGov = () => {
   getLegislationWithStatus('DELIVERED_TO_GOV')
-    .then(bills => bills.map(b => [
-      b.status.statusDesc,
-      b.actions.items.slice(-1)[0].date,
-      b.sponsor.member ? b.sponsor.member.shortName: '',
-      b.basePrintNo,
-      b.title
-    ]))
+    .then(convertLegislation)
     .then((bills) => writeFile('leg-gov.html', `<body><h4>D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
@@ -114,20 +116,14 @@ const getLegislationPassed = () => {
   Promise.all([getLegislationWithStatus('PASSED_ASSEMBLY'), getLegislationWithStatus('PASSED_SENATE')])
     .then((bills) => Promise.resolve(bills.flat()))
     .then(bills => bills.filter(b => ['RETURNED TO ASSEMBLY', 'RETURNED TO SENATE'].includes(b.actions.items.slice(-1)[0].text)))
-    .then(bills => bills.map(b => [
-      b.status.statusDesc,
-      b.actions.items.slice(-1)[0].date,
-      b.sponsor.member.shortName,
-      b.basePrintNo,
-      b.title
-    ]))
+    .then(convertLegislation)
     .then((bills) => writeFile('leg-passed.html', `<body><h4>Awaiting D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
 const getOCWAMeetings = () => {
   fetch("https://go.boarddocs.com/ny/ocwa/Board.nsf/BD-GetMeetingsList?open&0.9541476706708205", {
-    "body": "current_committee_id=A9QN5Z5E5509",
-    "method": "POST"
+    body: "current_committee_id=A9QN5Z5E5509",
+    method: "POST"
   })
   .then(r => r.json())
   .then(r => r.map(meeting => `${meeting.numberdate} ${meeting.name}`))
@@ -207,10 +203,10 @@ const getSPDClosedComplaints = () => {
 
 const getUnfitCityStructures = () => {
   const params = new URLSearchParams({
-    'f': 'json',
-    'orderByFields': 'violation_date',
-    'outFields': '*',
-    'where': `(
+    f: 'json',
+    orderByFields: 'violation_date',
+    outFields: '*',
+    where: `(
       (violation IN (
         '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
         '2020 PMCNYS - Section 107.1.4 - Unlawful Structures',
