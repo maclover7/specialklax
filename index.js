@@ -205,6 +205,40 @@ const getUnfitCityStructures = () => {
   .then((properties) => writeFile('citycodes-unfit.html', `<body>${properties.join("\n")}</body>`));
 };
 
+const getSPDClosedComplaints = () => {
+  const params = new URLSearchParams({
+    f: 'json',
+    outFields: '*',
+    resultType: 'none',
+    where: "(Closure_Date NOT IN ('Open'))"
+  });
+
+  return fetch(
+    `https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/SPD_Personnel_Complaints_2021_to_Present/FeatureServer/0/query?${params.toString()}`
+  )
+  .then(r => r.json())
+  .then(r => r.features.map((f) => {
+    delete f.attributes.ObjectId;
+    f.attributes.Complaint_Date = (new Date(f.attributes.Complaint_Date)).toLocaleDateString();
+    f.attributes.Closure_Date = new Date(f.attributes.Closure_Date);
+
+    return f.attributes;
+  }))
+  .then(f => f.sort((a, b) => b.Closure_Date - a.Closure_Date))
+  .then(f => f.map((complaint) => {
+    complaint.Closure_Date = complaint.Closure_Date.toLocaleDateString();
+    return complaint;
+  }))
+  .then((f) => {
+    const header = `<tr>${Object.keys(f[0]).map(h => '<th>' + h +  '</th>').join('')}</tr>`;
+    const rows = f.map(complaint =>
+      '<tr>' + Object.values(complaint).map(attr => '<td>' + attr + '</td>').join('') + '</tr>');
+
+    return `<table><thead>${header}</thead><tbody>${rows.join('')}</tbody></table>`;
+  })
+  .then(f => writeFile('spd-complaints-closed.html', f));
+};
+
 [
   //getCampaignFilersToday,
   getCityPermits,
@@ -213,5 +247,6 @@ const getUnfitCityStructures = () => {
   getLegislationPassed,
   getOCWAMeetings,
   // getOCSSCAppearances,
-  getUnfitCityStructures
+  getUnfitCityStructures,
+  getSPDClosedComplaints
 ].forEach(fn => fn());
