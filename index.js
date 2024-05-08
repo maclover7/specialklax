@@ -109,6 +109,7 @@ const getKeyArrests = () => {
   Promise.all([
     ['jeremy', 'degonzaque'],
     ['mario', 'grgic'],
+    ['shawn', 'kinsella'],
     ['joseph', 'murphy'],
     ['lucille', 'murphy']
   ].map(([firstName, lastName]) => getArrest(firstName, lastName)))
