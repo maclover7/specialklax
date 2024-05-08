@@ -206,7 +206,7 @@ const getSPDClosedComplaints = () => {
     const rows = f.map(complaint =>
       '<tr>' + Object.values(complaint).map(attr => '<td>' + attr + '</td>').join('') + '</tr>');
 
-    return `<table><thead>${header}</thead><tbody>${rows.join('')}</tbody></table>`;
+    return `<body><table><thead>${header}</thead><tbody>${rows.join('')}</tbody></table></body>`;
   })
   .then(f => writeFile('spd-complaints-closed.html', f));
 };
