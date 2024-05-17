@@ -225,7 +225,8 @@ const getUnfitCityStructures = () => {
           '100 Madison St & Warren St S',
           '308 Otisco St To Niagara St',
           '604 Division St E',
-          '701-05 Genesee St E & Almond St'
+          '701-05 Genesee St E & Almond St',
+          '1153-69 Fayette St W'
         )))
       AND status_type_name IN ('Open'))`
   });
