@@ -105,6 +105,23 @@ const getCityPermits = () => {
   .then((properties) => writeFile('citycodes-permit.html', `<body>${properties.join("\n")}</body>`));
 };
 
+const getElectricOutages = () => {
+  fetch(
+    `https://kubra.io/data/e7d0af30-b75a-44a1-ad24-f30dd7ed4904/public/reports/06c8ed31-48c2-4104-a9a2-41f844152ae3_report.json`
+  )
+  .then(r => r.json())
+  .then(r => r.file_data.areas)
+  .then(counties => counties.filter(c => c.percent_cust_a.val > 5))
+  .then(counties => counties.map(c => [
+    c.county,
+    c.cust_a.val,
+    c.cust_s,
+    `${c.percent_cust_a.val}%`
+  ]))
+  .then((counties) => Array.from(new Set(counties.reverse().map(p => p.join(" | ")))))
+  .then((counties) => writeFile('outages-electric.html', `<body>${counties.join("\n")}</body>`));
+};
+
 const getKeyArrests = () => {
   Promise.all([
     ['jeremy', 'degonzaque'],
@@ -247,8 +264,9 @@ const getUnfitCityStructures = () => {
 };
 
 [
-  //getCampaignFilersToday,
+  // getCampaignFilersToday,
   getCityPermits,
+  getElectricOutages,
   getKeyArrests,
   getLegislationGov,
   getLegislationPassed,
