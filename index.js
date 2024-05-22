@@ -273,13 +273,13 @@ const getUnfitCityStructures = () => {
 
 [
   // getCampaignFilersToday,
-  // getCityPermits,
+  getCityPermits,
   getElectricOutages,
-  // getKeyArrests,
-  // getLegislationGov,
-  // getLegislationPassed,
-  // getOCWAMeetings,
-  // // getOCSSCAppearances,
-  // getSPDClosedComplaints,
-  // getUnfitCityStructures,
+  getKeyArrests,
+  getLegislationGov,
+  getLegislationPassed,
+  getOCWAMeetings,
+  // getOCSSCAppearances,
+  getSPDClosedComplaints,
+  getUnfitCityStructures,
 ].forEach(fn => fn());
