@@ -107,19 +107,27 @@ const getCityPermits = () => {
 
 const getElectricOutages = () => {
   fetch(
-    `https://kubra.io/data/e7d0af30-b75a-44a1-ad24-f30dd7ed4904/public/reports/06c8ed31-48c2-4104-a9a2-41f844152ae3_report.json`
+    `https://kubra.io/stormcenter/api/v1/stormcenters/9cb2e5b7-d321-4575-a552-4ae7078cbc31/views/1b69b604-7588-4753-8591-9f135a962a2f/currentState`
   )
   .then(r => r.json())
+  .then(r => fetch(
+    `https://kubra.io/${r.data.interval_generation_data}/public/reports/06c8ed31-48c2-4104-a9a2-41f844152ae3_report.json`
+  ))
+  .then(r => r.json())
   .then(r => r.file_data.areas)
-  .then(counties => counties.filter(c => c.percent_cust_a.val > 5))
-  .then(counties => counties.map(c => [
-    c.county,
-    c.cust_a.val,
-    c.cust_s,
-    `${c.percent_cust_a.val}%`
+  .then(counties => [
+    ...counties,
+    ...counties.find(c => c.areaId === 'NY|Onondaga|county').areas
+  ].flat())
+  .then(areas => areas.filter(a => a.percent_cust_a.val > 5),)
+  .then(areas => areas.map(a => [
+    a.name,
+    a.cust_a.val,
+    a.cust_s,
+    `${a.percent_cust_a.val}%`
   ]))
-  .then((counties) => Array.from(new Set(counties.reverse().map(p => p.join(" | ")))))
-  .then((counties) => writeFile('outages-electric.html', `<body>${counties.join("\n")}</body>`));
+  .then((areas) => Array.from(new Set(areas.reverse().map(p => p.join(" | ")))))
+  .then((areas) => writeFile('outages-electric.html', `<body>${areas.join("\n")}</body>`));
 };
 
 const getKeyArrests = () => {
@@ -265,13 +273,13 @@ const getUnfitCityStructures = () => {
 
 [
   // getCampaignFilersToday,
-  getCityPermits,
+  // getCityPermits,
   getElectricOutages,
-  getKeyArrests,
-  getLegislationGov,
-  getLegislationPassed,
-  getOCWAMeetings,
-  // getOCSSCAppearances,
-  getSPDClosedComplaints,
-  getUnfitCityStructures,
+  // getKeyArrests,
+  // getLegislationGov,
+  // getLegislationPassed,
+  // getOCWAMeetings,
+  // // getOCSSCAppearances,
+  // getSPDClosedComplaints,
+  // getUnfitCityStructures,
 ].forEach(fn => fn());
