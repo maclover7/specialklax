@@ -119,7 +119,7 @@ const getElectricOutages = () => {
     ...counties,
     ...counties.find(c => c.areaId === 'NY|Onondaga|county').areas
   ].flat())
-  .then(areas => areas.filter(a => a.percent_cust_a.val > 5),)
+  .then(areas => areas.filter(a => a.percent_cust_a.val > 5))
   .then(areas => areas.map(a => [
     a.name,
     a.cust_a.val,
