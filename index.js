@@ -132,6 +132,7 @@ const getElectricOutages = () => {
 
 const getKeyArrests = () => {
   Promise.all([
+    ['michele', 'banach'],
     ['jeremy', 'degonzaque'],
     ['mario', 'grgic'],
     ['shawn', 'kinsella'],
