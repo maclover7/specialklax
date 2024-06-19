@@ -249,6 +249,7 @@ const getUnfitCityStructures = () => {
         '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions')
         OR (complaint_address IN (
           '100 Madison St & Warren St S',
+          '205 Carbon St',
           '308 Otisco St To Niagara St',
           '604 Division St E',
           '701-05 Genesee St E & Almond St',
