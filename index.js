@@ -134,6 +134,7 @@ const getKeyArrests = () => {
   Promise.all([
     ['michele', 'banach'],
     ['jeremy', 'degonzaque'],
+    ['joshua', 'emmons'],
     ['mario', 'grgic'],
     ['shawn', 'kinsella'],
     ['joseph', 'murphy'],
