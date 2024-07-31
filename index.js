@@ -135,6 +135,7 @@ const getKeyArrests = () => {
     ['michele', 'banach'],
     ['mackenzie', 'brown'],
     ['jeremy', 'degonzaque'],
+    ['kimber', 'emm'],
     ['joshua', 'emmons'],
     ['mario', 'grgic'],
     ['shawn', 'kinsella'],
