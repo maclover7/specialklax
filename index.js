@@ -226,17 +226,22 @@ const getSPDClosedComplaints = () => {
 
     return f.attributes;
   }))
+  .then(f => f.filter((complaint) => {
+    return [complaint.Disciplinary_Actions, complaint.NonDisciplinary_Actions].some(action =>
+      !!action && action.toLowerCase().trim() !== 'none');
+  }))
   .then(f => f.sort((a, b) => b.Closure_Date - a.Closure_Date))
   .then(f => f.map((complaint) => {
     complaint.Closure_Date = complaint.Closure_Date.toLocaleDateString();
     return complaint;
   }))
   .then((f) => {
-    const header = `<tr>${Object.keys(f[0]).map(h => '<th>' + h +  '</th>').join('')}</tr>`;
-    const rows = f.map(complaint =>
-      '<tr>' + Object.values(complaint).map(attr => '<td>' + attr + '</td>').join('') + '</tr>');
+    const result = [
+      Object.keys(f[0]),
+      ...f.map(complaint => Object.values(complaint)),
+    ].map(row => `<p>${row.join(',')}</p>`);
 
-    return `<body><table><thead>${header}</thead><tbody>${rows.join('')}</tbody></table></body>`;
+    return `<body>${result.join('')}</body>`;
   })
   .then(f => writeFile('spd-complaints-closed.html', f));
 };
