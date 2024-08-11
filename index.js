@@ -11,7 +11,7 @@ const convertLegislation = (bills) => bills.map(b => [
 ]);
 
 const getArrest = (firstName, lastName) => {
-  return fetch(`https://vinelink-mobile.vineapps.com/api/v1/guest/persons?limit=20&offset=0&showPhotos=false&isPartialSearch=false&siteRefId=NYSWVINE&personFirstName=${firstName}&personLastName=${lastName}&stateServed=NY&isSetSort=false&sortByDeleteDateAndLastUpdatedDate=false&includeJuveniles=false&includeSearchBlocked=false&includeRegistrantInfo=true&addImageWatermark=true&personContextTypes=OFFENDER&personContextTypes=DEFENDANT&obscurePersonData=true`, {
+  return fetch(`https://vinelink-mobile.vineapps.com/api/v1/guest/persons?limit=20&offset=0&showPhotos=false&isPartialSearch=false&siteRefId=NYSWVINE&personFirstName=${firstName}&personLastName=${lastName}&stateServed=NY&isSetSort=false&sortByDeleteDateAndLastUpdatedDate=false&includeJuveniles=false&includeSearchBlocked=false&includeRegistrantInfo=true&addImageWatermark=false&personContextTypes=OFFENDER&personContextTypes=DEFENDANT&obscurePersonData=true`, {
     "headers": {
       "accept": "application/json, text/plain, */*",
       "accept-language": "en-US,en;q=0.9",
