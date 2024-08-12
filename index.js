@@ -32,7 +32,16 @@ const getArrest = (firstName, lastName) => {
     "method": "GET"
   })
   .then(r => r.json())
-  .then(r => r._embedded.persons || []);
+  .then(r => r._embedded.persons || [])
+  .then(r => {
+    if (r.length === 0) return r;
+
+    r.forEach((arrestRecord) => {
+      delete arrestRecord._links;
+      delete arrestRecord.imageLinks;
+    });
+    return r;
+  });
 };
 
 const getLegislationWithStatusOffset = (status, offset) => {
