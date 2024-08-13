@@ -37,6 +37,10 @@ const getArrest = (firstName, lastName) => {
     if (r.length === 0) return r;
 
     r.forEach((arrestRecord) => {
+      arrestRecord.locations.forEach((jailEntry) => {
+        if (jailEntry.agencyRoles) delete jailEntry.agencyRoles;
+      });
+
       delete arrestRecord._links;
       delete arrestRecord.imageLinks;
     });
