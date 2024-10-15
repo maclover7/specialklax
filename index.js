@@ -158,6 +158,7 @@ const getKeyArrests = () => {
     ['natasha', 'newton'],
     ['natasha', 'gegory'],
     ['curtis', 'rouse'],
+    ['keith', 'rupe'],
     ['minh', 'tran']
   ].map(([firstName, lastName]) => getArrest(firstName, lastName)))
   .then(p => writeFile('ocso-keyarrests.html', `<body>${p.map(JSON.stringify).join("\n")}</body>`));
