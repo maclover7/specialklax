@@ -160,6 +160,7 @@ const getKeyArrests = () => {
     ['natasha', 'gegory'],
     ['curtis', 'rouse'],
     ['keith', 'rupe'],
+    ['kevin', 'schaus'],
     ['dakota', 'smith'],
     ['minh', 'tran']
   ].map(([firstName, lastName]) => getArrest(firstName, lastName)))
