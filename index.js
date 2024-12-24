@@ -162,7 +162,22 @@ const getKeyArrests = () => {
     ['keith', 'rupe'],
     ['kevin', 'schaus'],
     ['dakota', 'smith'],
-    ['minh', 'tran']
+    ['minh', 'tran'],
+    // Marcy CF
+    ['matthew', 'galliher'],
+    ['nicholas', 'anzalone'],
+    ['david', 'kingsley'],
+    ['michael', 'mashaw'],
+    ['glenn', 'trombley'],
+    ['nicholas', 'kieffer'],
+    ['robert', 'kessler'],
+    ['michael', 'fisher'],
+    ['christopher', 'walrath'],
+    ['michael', 'along'],
+    ['shea', 'schoff'],
+    ['david', 'walters'],
+    ['kyle', 'dashnaw'],
+    ['anthony', 'farina']
   ].map(([firstName, lastName]) => getArrest(firstName, lastName)))
   .then(p => writeFile('ocso-keyarrests.html', `<body>${p.map(JSON.stringify).join("\n")}</body>`));
 };
