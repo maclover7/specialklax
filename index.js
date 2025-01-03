@@ -164,10 +164,12 @@ const getKeyArrests = () => {
     ['dakota', 'smith'],
     ['minh', 'tran'],
     // Marcy CF
+    ['mathew', 'galliher'],
     ['matthew', 'galliher'],
     ['nicholas', 'anzalone'],
     ['david', 'kingsley'],
     ['michael', 'mashaw'],
+    ['glenn', 'trombly'],
     ['glenn', 'trombley'],
     ['nicholas', 'kieffer'],
     ['robert', 'kessler'],
