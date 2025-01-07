@@ -300,7 +300,8 @@ const getUnfitCityStructures = () => {
           '308 Otisco St To Niagara St',
           '604 Division St E',
           '701-05 Genesee St E & Almond St',
-          '1153-69 Fayette St W'
+          '1153-69 Fayette St W',
+          '1001 Park Ave & Lakeview Ave'
         )))
       AND status_type_name IN ('Open'))`
   });
