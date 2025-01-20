@@ -204,6 +204,42 @@ const getLegislationPassed = () => {
     .then((bills) => writeFile('leg-passed.html', `<body><h4>Awaiting D2G</h4><ol>${bills.map(b => `<li>${b.join(" — ")}</li>`).join('')}</ol></body>`));
 };
 
+const getMarcyWarrants = () => {
+  const lastNames = [
+    // First set
+    'GALLIHER', // Mathew J.
+    'ANZALONE', // Nicholas J.
+    'KINGSLEY', // David C. II
+    'MASHAW', // Michael
+    'TROMBLEY', // Glenn
+    'TROMBLY', // Glenn
+    'KIEFFER', // Nicholas
+    'KESSLER', // Robert
+    'WALRATH', // Christopher
+    'ALONG', // Michael
+    'SCHOFF', // Shea
+    'WALTERS', // David
+    'DASHNAW', // Kyle
+    'FARINA', // Anthony
+
+    // Second set
+    'PLOSS', // Chrstine
+    'POPIEL', // Jared
+    'THISSE', // Evan
+    'MATOS', // Patricia
+  ];
+
+  fetch('https://sheriff.oneidacountyny.gov/quick-links/warrants-list/')
+    .then(r => r.text())
+    .then((r) => {
+      return lastNames.map((lastName) => {
+        const warrantExists = r.includes(`<td data-sort="${lastName}">`);
+        return `${lastName}: ${warrantExists ? 'YES' : 'NO'}`;
+      })
+    })
+    .then((results) => writeFile('warrants-marcy.html', `<body>${results.join("\n")}</body>`));
+};
+
 const getOCWAMeetings = () => {
   fetch("https://go.boarddocs.com/ny/ocwa/Board.nsf/BD-GetMeetingsList?open&0.9541476706708205", {
     body: "current_committee_id=A9QN5Z5E5509",
@@ -334,6 +370,7 @@ const getUnfitCityStructures = () => {
   getKeyArrests,
   getLegislationGov,
   getLegislationPassed,
+  getMarcyWarrants,
   getOCWAMeetings,
   // getOCSSCAppearances,
   getSPDClosedComplaints,
