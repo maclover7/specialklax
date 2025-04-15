@@ -166,6 +166,7 @@ const getKeyArrests = () => {
     ['minh', 'tran'],
     ['kaitlan', 'conley'],
     ['radu', 'turner'],
+    ['aaron', 'alshaman'],
     // Marcy CF -- original 14
     ['mathew', 'galliher'],
     ['matthew', 'galliher'],
