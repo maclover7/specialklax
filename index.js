@@ -118,7 +118,7 @@ const getCityPermits = () => {
   .then((properties) => writeFile('citycodes-permit.html', `<body>${properties.join("\n")}</body>`));
 };
 
-const getElectricOutages = () => {
+const getElectricOutagesNG = () => {
   fetch(
     `https://kubra.io/stormcenter/api/v1/stormcenters/9cb2e5b7-d321-4575-a552-4ae7078cbc31/views/1b69b604-7588-4753-8591-9f135a962a2f/currentState`
   )
@@ -140,7 +140,33 @@ const getElectricOutages = () => {
     `${a.percent_cust_a.val}%`
   ]))
   .then((areas) => Array.from(new Set(areas.reverse().map(p => p.join(" | ")))))
-  .then((areas) => writeFile('outages-electric.html', `<body>${areas.join("\n")}</body>`));
+  .then((areas) => writeFile('outages-electric-ng.html', `<body>${areas.join("\n")}</body>`));
+};
+
+const getElectricOutagesNYSEG = () => {
+  fetch('https://ebiz1.nyseg.com/OutageReports/NYSEG.html')
+    .then(r => r.text())
+    .then(r => new Promise((resolve) => resolve(cheerio.load(r))))
+    .then(r => {
+      return r('table tr').toArray().slice(1, -1).map((county) => {
+        const result = [
+          r(r(county).children()[0]).text(),
+          Number(r(r(county).children()[2]).text().replace(',', '')),
+          Number(r(r(county).children()[1]).text().replace(',', ''))
+        ];
+  
+        const pct = (100 * result[1] / result[2]).toFixed(2);
+        if (pct > 5) {
+          result.push(`${pct}%`);
+          return result;
+        } else {
+          return null;
+        }
+      });
+    })
+    .then((counties) => counties.filter((c) => c))
+    .then((counties) => Array.from(new Set(counties.reverse().map(p => p.join(" | ")))))
+    .then((counties) => writeFile('outages-electric-nyseg.html', `<body>${counties.join("\n")}</body>`));
 };
 
 const getKeyArrests = () => {
@@ -372,7 +398,8 @@ const getUnfitCityStructures = () => {
 [
   // getCampaignFilersToday,
   getCityPermits,
-  getElectricOutages,
+  getElectricOutagesNG,
+  getElectricOutagesNYSEG,
   getKeyArrests,
   getLegislationGov,
   getLegislationPassed,
