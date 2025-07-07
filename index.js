@@ -132,7 +132,7 @@ const getElectricOutagesNG = () => {
     ...counties,
     ...counties.find(c => c.areaId === 'NY|Onondaga|county').areas
   ].flat())
-  .then(areas => areas.filter(a => a.percent_cust_a.val > 5))
+  .then(areas => areas.filter(a => a.percent_cust_a.val >= 1))
   .then(areas => areas.map(a => [
     a.name,
     a.cust_a.val,
@@ -157,7 +157,7 @@ const getElectricOutagesNYSEG = () => {
           ];
 
           const pct = (100 * result[1] / result[2]).toFixed(2);
-          if (pct > 5) {
+          if (pct >= 1) {
             result.push(`${pct}%`);
             return result;
           } else {
