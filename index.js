@@ -148,25 +148,35 @@ const getElectricOutagesNYSEG = () => {
     .then(r => r.text())
     .then(r => new Promise((resolve) => resolve(cheerio.load(r))))
     .then(r => {
-      return r('table tr').toArray().slice(1, -1).map((county) => {
-        const result = [
-          r(r(county).children()[0]).text(),
-          Number(r(r(county).children()[2]).text().replace(',', '')),
-          Number(r(r(county).children()[1]).text().replace(',', ''))
-        ];
-  
-        const pct = (100 * result[1] / result[2]).toFixed(2);
-        if (pct > 5) {
-          result.push(`${pct}%`);
-          return result;
-        } else {
-          return null;
-        }
-      });
+      const counties = r('table tr').toArray().slice(1, -1)
+        .map((county) => {
+          const result = [
+            `${r(r(county).children()[0]).text()} COUNTY`,
+            Number(r(r(county).children()[2]).text().replace(',', '')).toLocaleString(),
+            Number(r(r(county).children()[1]).text().replace(',', '')).toLocaleString()
+          ];
+
+          const pct = (100 * result[1] / result[2]).toFixed(2);
+          if (pct > 5) {
+            result.push(`${pct}%`);
+            return result;
+          } else {
+            return null;
+          }
+        })
+        .filter((c) => c);
+
+      return [
+        `Updated ::: ${new Date(r('p[align="right"]').text().split('Update: ')[1]).toLocaleTimeString()}`,
+        ...Array.from(new Set(counties.reverse().map(p => p.join(" | "))))
+      ];
     })
-    .then((counties) => counties.filter((c) => c))
-    .then((counties) => Array.from(new Set(counties.reverse().map(p => p.join(" | ")))))
-    .then((counties) => writeFile('outages-electric-nyseg.html', `<body>${counties.join("\n")}</body>`));
+    .then((counties) => {
+      return Promise.all([
+        writeFile('outages-electric-nyseg.csv', `<body>${counties.join("\n")}</body>`),
+        writeFile('outages-electric-nyseg.html', `<body>${counties.join("\n")}</body>`)
+      ]);
+    });
 };
 
 const getKeyArrests = () => {
