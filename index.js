@@ -1,4 +1,4 @@
-const { writeFile } = require('fs/promises');
+const { readFile, writeFile } = require('fs/promises');
 const cheerio = require('cheerio');
 
 // ** Helper functions ** //
@@ -172,10 +172,15 @@ const getElectricOutagesNYSEG = () => {
       ];
     })
     .then((counties) => {
-      return Promise.all([
-        writeFile('outages-electric-nyseg.csv', `<body>${counties.join("\n")}</body>`),
-        writeFile('outages-electric-nyseg.html', `<body>${counties.join("\n")}</body>`)
-      ]);
+      readFile('outages-electric-nyseg.csv')
+      .then((currentFile) => {
+        if (currentFile.toString().trim().split("\n").length > 1 || counties.length > 1) {
+          return Promise.all([
+            writeFile('outages-electric-nyseg.csv', `<body>${counties.join("\n")}</body>`),
+            writeFile('outages-electric-nyseg.html', `<body>${counties.join("\n")}</body>`)
+          ]);
+        }
+      });
     });
 };
 
