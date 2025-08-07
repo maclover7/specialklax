@@ -73,6 +73,22 @@ const getLegislationWithStatus = (status) => {
 
 // ** //
 
+const getAttorneyDiscipline = () => {
+  const query = "SELECT * \
+    WHERE ((judicial_department_of_admission = '4') AND judicial_department_of_admission IS NOT NULL) \
+    AND (status IN ('Disbarred', 'Resigned from bar - disciplinary reason', 'Suspended'))";
+
+  fetch(`https://data.ny.gov/resource/eqw2-r5nb.json?$query=${encodeURIComponent(query)}`)
+  .then(r => r.json())
+  .then((rows) => {
+    return [
+      Object.keys(rows[0]).join(" | "),
+      ...rows.map(row => Object.values(row).join(" | "))
+    ];
+  })
+  .then((rows) => writeFile('attorneys.html', `<body>${rows.join("\n")}</body>`));
+};
+
 const getCampaignFilersToday = () => {
   fetch("https://publicreporting.elections.ny.gov/ActiveDeactiveFiler/ActiveDeactiveFiler?lstDateType=Today&lstUCOfficeType=&lstStatus=All&lstFilerType=&ddlCommitteeType=&txtDateFrom=&txtDateTo=&Command=CSV&listOfFilerGrid_length=10", {
     "headers": {
@@ -412,6 +428,7 @@ const getUnfitCityStructures = () => {
 };
 
 [
+  getAttorneyDiscipline,
   // getCampaignFilersToday,
   getCityPermits,
   getElectricOutagesNG,
