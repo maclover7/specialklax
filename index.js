@@ -428,7 +428,7 @@ const getUnfitCityStructures = () => {
 };
 
 [
-  getAttorneyDiscipline,
+  // getAttorneyDiscipline,
   // getCampaignFilersToday,
   getCityPermits,
   getElectricOutagesNG,
