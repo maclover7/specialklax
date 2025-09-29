@@ -433,7 +433,7 @@ const getUnfitCityStructures = () => {
   // getCampaignFilersToday,
   getCityPermits,
   getElectricOutagesNG,
-  getElectricOutagesNYSEG,
+  // getElectricOutagesNYSEG,
   getKeyArrests,
   getLegislationGov,
   getLegislationPassed,
