@@ -41,6 +41,7 @@ const getArrest = (firstName, lastName) => {
         if (jailEntry.agencyRoles) delete jailEntry.agencyRoles;
       });
 
+      delete arrestRecord.agency;
       delete arrestRecord._links;
       delete arrestRecord.imageLinks;
     });
