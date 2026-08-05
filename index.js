@@ -252,6 +252,7 @@ const getKeyArrests = () => {
     ['luciano', 'frattolin'],
     ['caleb', 'slater'],
     ['MATEU', 'HEALEY-PARERA'],
+    ['Nathalie', 'Alejandro'],
 
     ['michael', 'moon'],
     ['jonah', 'levi'],
