@@ -418,8 +418,11 @@ const getUnfitCityStructures = () => {
     where: `(
       (violation IN (
         '2020 PMCNYS - Section 107.1.3 - Structure Unfit for Human Occupancy',
+        '2025 FCNYS - Section 115.1.3 - Structure Unfit for Human Occupancy',
+        '2025 PMCNYS - Section 109.1.3 - Structure Unfit for Human Occupancy',
         '2020 PMCNYS - Section 107.1.4 - Unlawful Structures',
-        '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions')
+        '2020 PMCNYS - Section 305.1.1 - Unsafe Conditions',
+        '2025 FCNYS - Section 115.1.1 - Unsafe Conditions')
         OR (complaint_address IN (
           '100 Madison St & Warren St S',
           '205 Carbon St',
